@@ -15,3 +15,5 @@ npm install
 
 nodemon index.js
 ```
+
+See the demo in action by opening your favorite web browser and navigating to `localhost:3000`

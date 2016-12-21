@@ -238,6 +238,10 @@ $(function() {
 
   })
 
+  $joinGame.click(function () {
+    joinGame();
+
+  })
 
   // Socket events
 
