@@ -285,7 +285,9 @@ $(function() {
 
 
 
-
+function sendGame(){
+  socket.emit('makeGame');
+};
 
   socket.on('gameCreated', function (data) {
     console.log("Game Created! ID is: " + data.gameId)
@@ -293,8 +295,35 @@ $(function() {
     //alert("Game Created! ID is: "+ JSON.stringify(data));
   });
 
-function sendGame(){
-  socket.emit('makeGame');
+
+
+//Join into an Existing Game
+function joinGame(){
+  socket.emit('joinGame');
 };
+
+socket.on('joinSuccess', function (data) {
+  log('Joining the following game: ' + data.gameId);
+});
+
+
+//Response from Server on existing User found in a game
+socket.on('alreadyJoined', function (data) {
+  log('You are already in an Existing Game: ' + data.gameId);
+});
+
+
+
+
+function leaveGame(){
+socket.emit('leaveGame');
+};
+
+socket.on('leftGame', function (data) {
+  log('Leaving Game ' + data.gameId);
+});
+
+
+
 
 });

@@ -8,7 +8,15 @@ html {
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
 }
-.createGame {
+
+.gameButtons {
+
+  position: absolute;
+  right: 0px;
+}
+
+
+.createGame, .joinGame {
 /* http://css3buttongenerator.com/ */
 
   background: #000000;
@@ -23,7 +31,7 @@ html {
   text-shadow: 1px 1px 3px #666666;
   font-family: Arial;
   color: #ffffff;
-  font-size: 43px;
+  font-size: 20px;
   padding: 11px 20px 10px 20px;
   text-decoration: none;
 
