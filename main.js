@@ -15,8 +15,8 @@ $(function() {
 
   var $loginPage = $('.login.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
-  var $createGame = $('.createGame'); 
   var $joinGame = $('.joinGame'); 
+  var $leaveGame = $('.leaveGame'); 
 
   // Prompt for setting a username
   var username;
@@ -233,13 +233,14 @@ $(function() {
     $inputMessage.focus();
   });
 
-  $createGame.click(function () {
-    sendGame();
-
-  })
 
   $joinGame.click(function () {
     joinGame();
+
+  })
+
+  $leaveGame.click(function () {
+    leaveGame();
 
   })
 
@@ -289,9 +290,6 @@ $(function() {
 
 
 
-function sendGame(){
-  socket.emit('makeGame');
-};
 
   socket.on('gameCreated', function (data) {
     console.log("Game Created! ID is: " + data.gameId)

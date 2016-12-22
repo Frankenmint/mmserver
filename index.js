@@ -5,6 +5,7 @@ var fs = require('fs');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
+var loopLimit = 0;
 
 server.listen(port, function () {
   console.log('Server listening at port %d', port);
@@ -44,15 +45,14 @@ function buildGame(socket) {
 
 
 function gameSeeker (socket) {
-
-    if ( gameCollection.totalGameCount == 0) {
+    ++loopLimit;
+    if (( gameCollection.totalGameCount == 0) || (loopLimit >= 20)) {
 
     buildGame(socket);
+    loopLimit = 0;
 
     } else {
     var rndPick = Math.floor(Math.random() * gameCollection.totalGameCount);
-    console.log(rndPick);
-    console.log(gameCollection.gameList);
     if (gameCollection.gameList[rndPick]['gameObject']['playerTwo'] == null)
     {
       gameCollection.gameList[rndPick]['gameObject']['playerTwo'] = socket.username;
@@ -62,6 +62,7 @@ function gameSeeker (socket) {
       console.log( socket.username + " has been added to: " + gameCollection.gameList[rndPick]['gameObject']['id']);
 
     } else {
+
       gameSeeker(socket);
     }
   }
@@ -129,62 +130,36 @@ io.on('connection', function (socket) {
     }
   });
 
-//when the client  requests to make a Game
-socket.on('makeGame', function () {
-
-  console.log(JSON.stringify(gameCollection.gameList));
-  var noGamesFound = true;
-   
-  for(var i = 0; i < gameCollection.totalGameCount; i++){
-  var plyr1Tmp = gameCollection.gameList[i]['gameObject']['playerOne'];
-  var plyr2Tmp = gameCollection.gameList[i]['gameObject']['playerTwo'];
-  if (plyr1Tmp == socket.username || plyr2Tmp == socket.username){
-  noGamesFound = false;
-  console.log("This User already has a Game!");
-  socket.emit('alreadyJoined', {
-  gameId: gameCollection.gameList[i]['gameObject']['id']
-  });
-
-   }
-
-  }
-
-  if (noGamesFound == true) {
-    buildGame(socket);
-
-  }
-
-
-});
-
-
-socket.on('joinGame', function (){
-  console.log(socket.username + " wants to join a game");
-
-  var alreadyInGame = false;
-
-  for(var i = 0; i < gameCollection.totalGameCount; i++){
-  var plyr1Tmp = gameCollection.gameList[i]['gameObject']['playerOne'];
-  var plyr2Tmp = gameCollection.gameList[i]['gameObject']['playerTwo'];
-  if (plyr1Tmp == socket.username || plyr2Tmp == socket.username){
-  alreadyInGame = true;
-  console.log(socket.username + " already has a Game!");
-
-  socket.emit('alreadyJoined', {
-  gameId: gameCollection.gameList[i]['gameObject']['id']
-  });
-
-   }
-
-  }
-  if (alreadyInGame == false){
-
-
-  gameSeeker(socket);
   
-  }
 
-  })
+
+  socket.on('joinGame', function (){
+    console.log(socket.username + " wants to join a game");
+
+    var alreadyInGame = false;
+
+    for(var i = 0; i < gameCollection.totalGameCount; i++){
+    var plyr1Tmp = gameCollection.gameList[i]['gameObject']['playerOne'];
+    var plyr2Tmp = gameCollection.gameList[i]['gameObject']['playerTwo'];
+    if (plyr1Tmp == socket.username || plyr2Tmp == socket.username){
+    alreadyInGame = true;
+    console.log(socket.username + " already has a Game!");
+
+    socket.emit('alreadyJoined', {
+    gameId: gameCollection.gameList[i]['gameObject']['id']
+    });
+
+     }
+
+    }
+    if (alreadyInGame == false){
+
+
+    gameSeeker(socket);
+    
+    }
+
+    });
 
 });
 

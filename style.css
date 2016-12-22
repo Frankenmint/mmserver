@@ -16,7 +16,7 @@ html {
 }
 
 
-.createGame, .joinGame {
+.joinGame, .leaveGame {
 /* http://css3buttongenerator.com/ */
 
   background: #000000;
