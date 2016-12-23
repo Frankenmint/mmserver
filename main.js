@@ -2,9 +2,9 @@ $(function() {
   var FADE_TIME = 150; // ms
   var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
-    '#e21400', '#91580f', '#f8a700', '#f78b00',
-    '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
-    '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
+  '#e21400', '#91580f', '#f8a700', '#f78b00',
+  '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
+  '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
   ];
 
   // Initialize variables
@@ -50,7 +50,7 @@ $(function() {
 
       // Tell the server your username
       socket.emit('add user', username);
- 
+      
     }
   }
 
@@ -95,16 +95,16 @@ $(function() {
     }
 
     var $usernameDiv = $('<span class="username"/>')
-      .text(data.username)
-      .css('color', getUsernameColor(data.username));
+    .text(data.username)
+    .css('color', getUsernameColor(data.username));
     var $messageBodyDiv = $('<span class="messageBody">')
-      .text(data.message);
+    .text(data.message);
 
     var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
-      .data('username', data.username)
-      .addClass(typingClass)
-      .append($usernameDiv, $messageBodyDiv);
+    .data('username', data.username)
+    .addClass(typingClass)
+    .append($usernameDiv, $messageBodyDiv);
 
     addMessageElement($messageDiv, options);
   }
@@ -191,8 +191,8 @@ $(function() {
     // Compute hash code
     var hash = 7;
     for (var i = 0; i < username.length; i++) {
-       hash = username.charCodeAt(i) + (hash << 5) - hash;
-    }
+     hash = username.charCodeAt(i) + (hash << 5) - hash;
+   }
     // Calculate color
     var index = Math.abs(hash % COLORS.length);
     return COLORS[index];
@@ -275,6 +275,8 @@ $(function() {
     log(data.username + ' left');
     addParticipantsMessage(data);
     removeChatTyping(data);
+
+
   });
 
   // Whenever the server emits 'typing', show the typing message
@@ -296,7 +298,21 @@ $(function() {
     log(data.username + ' created Game: ' + data.gameId);
     //alert("Game Created! ID is: "+ JSON.stringify(data));
   });
-
+  
+  socket.on('disconnect', function () {
+   log('you have been disconnected');
+ });
+  
+  socket.on('reconnect', function () {
+   log('you have been reconnected');
+   if (username) {
+     socket.emit('add user', username);
+   }
+ });
+  
+  socket.on('reconnect_error', function () {
+   log('attempt to reconnect has failed');
+ });
 
 
 //Join into an Existing Game
@@ -315,17 +331,21 @@ socket.on('alreadyJoined', function (data) {
 });
 
 
-
-
 function leaveGame(){
-socket.emit('leaveGame');
+  socket.emit('leaveGame');
 };
 
 socket.on('leftGame', function (data) {
   log('Leaving Game ' + data.gameId);
 });
 
+socket.on('notInGame', function () {
+  log('You are not currently in a Game.');
+});
 
+socket.on('gameDestroyed', function (data) { 
+  log( data.gameOwner+ ' destroyed game: ' + data.gameId);
 
+});
 
 });
